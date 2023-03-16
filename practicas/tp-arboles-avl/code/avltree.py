@@ -43,35 +43,34 @@ Entrada: el árbol B sobre el cual se quiere realizar la inserción (BinaryTree)
 Salida: Si pudo insertar con éxito devuelve la key donde se inserta el elemento. En caso contrario devuelve None.
 '''
 
-def insertTree(B, element, key):
-   newNode = BinaryTreeNode()
-   newNode.key = key
-   newNode.value = element
-   if (B.root == None):
-     B.root = newNode
-     return key
-   return insertR(newNode, B.root)
+def insert(AVLTree, element, key):
+  newNode = AVLNode()
+  newNode.value = element
+  newNode.key = key
+  
+  if AVLTree.root == None:
+    AVLTree.root = newNode
+  else:
+    AVLTree.root = insertR(newNode, AVLTree.root)
+  return key
 
 def insertR(newNode, currentNode):
-   if newNode.key > currentNode.key:
-     if currentNode.rightnode == None:
-       newNode.parent = currentNode
-       currentNode.rightnode = newNode
-       return newNode.key
-     else:
-       right = insertR(newNode, currentNode.rightnode)
-       if right != None:
-         return right
-
-   else:
-     if currentNode.leftnode == None:
-       newNode.parent = currentNode
-       currentNode.leftnode = newNode
-       return newNode.key
-     else:
-       left = insertR(newNode, currentNode.leftnode)
-       if left != None:
-         return left
+  if newNode.key > currentNode.key:
+    if currentNode.rightnode == None:
+      currentNode.rightnode = newNode
+      newNode.parent = currentNode
+      return newNode.key
+    currentNode = currentNode.rightnode
+    return insertR(newNode, currentNode)
+  elif newNode.key < currentNode.key:
+    if currentNode.leftnode == None:
+      currentNode.leftnode = newNode
+      newNode.parent = currentNode
+      return newNode.key
+    currentNode = currentNode.leftnode
+    return insertR(newNode, currentNode)
+  else:
+    return None
 
 '''      
 delete(B,element)
@@ -81,27 +80,24 @@ Entrada: el árbol binario B sobre el cual se quiere realizar la eliminación (B
 Salida: Devuelve clave (key) del elemento a eliminar. Devuelve None si el elemento a eliminar no se encuentra.
 '''
 
-def deleteTree(B, element):
-  node = searchNode(B, element)
+def delete(B, element):
+  node = searchR(B, element)
   if node == None:
     return
   else:
     return deleteR(B, node)
 
-def searchNode(B, element):
-   return searchR(B.root, element)
-
 def deleteR(B, node):
    if node.rightnode == None:
      if node.leftnode == None:
-       #eliminar hoja
+       #eliminar hijo
        if node.parent.leftnode != None and node.parent.leftnode == node:
          node.parent.leftnode = None
          return node.key
        elif node.parent.rightnode != None and node.parent.rightnode == node:
          node.parent.rightnode = None
          return node.key
-     #hoja del lado izquierdo
+     #hijo del lado izquierdo
      if node.parent.leftnode != None and node.parent.leftnode == node:
        node.parent.leftnode = node.leftnode
        return node.key
@@ -109,7 +105,7 @@ def deleteR(B, node):
        node.parent.rightnode = node.leftnode
        return node.key
    else:
-     #hoja del lado derecho
+     #hijo del lado derecho
      if node.leftnode == None:
        if node.parent.leftnode == node:
          node.parent.leftnode = node.rightnode
@@ -119,7 +115,7 @@ def deleteR(B, node):
          return node.key
 
      else:
-       #2 hojas, elimina el menor de los mayores
+       #2 hijos, elimina el menor de los mayores
        newNode = smaller(node.rightnode)
        node.value = newNode.value
        oldKey = node.key
@@ -145,25 +141,25 @@ Entrada: El árbol binario (BinaryTree) y la key del elemento al cual se quiere 
 Salida: Devuelve el valor de un elemento con una key del árbol
 '''
 
-def accessTree(B, key):
-   node = searchKey(B.root, key)
+def access(AVLTree, key):
+   node = accessR(AVLTree.root, key)
    if (node == None):
      return None
    else:
      return node.value
 
-def searchKey(node, key):
+def accessR(node, key):
    if (node == None):
      return None
 
    if (node.key == key):
      return node
 
-   rightN = searchKey(node.rightnode, key)
+   rightN = accessR(node.rightnode, key)
    if (rightN != None):
      return rightN
 
-   leftN = searchKey(node.leftnode, key)
+   leftN = accessR(node.leftnode, key)
    if (leftN != None):
      return leftN
 
@@ -174,13 +170,13 @@ Entrada: El árbol binario (BinaryTree) y la clave (key) sobre la cual se quiere
 Salida: Devuelve None si no existe elemento para dicha clave. Caso contrario devuelve la clave del nodo donde se hizo el update.
 '''
 
-def updateTree(L, element, key):
-   node = searchKey(L.root, key)
-   if (node == None):
-     return
-   else:
-     node.value = element
-     return node.key
+def update(AVLTree, key, newValue):
+  node = accessR(AVLTree.root, key)
+  if node == None:
+    return 
+  else:
+    node.value = newValue
+    return node.key
 
 '''
 calculateBalance(AVLTree) 
@@ -206,3 +202,22 @@ def treeHeight(B):
         return 0
     return 1 + max(treeHeight(B.leftnode), treeHeight(B.rightnode))
 
+'''
+rotateLeft(Tree,avlnode) 
+Descripción: Implementa la operación rotación a la izquierda 
+Entrada: Un Tree junto a un AVLnode sobre el cual se va a operar la rotación a la  izquierda
+Salida: retorna la nueva raíz
+'''
+
+def rotateLeft():
+  return
+'''
+rotateRight(Tree,avlnode) 
+Descripción: Implementa la operación rotación a la derecha 
+Entrada: Un Tree junto a un AVLnode sobre el cual se va a operar la rotación a la  derecha
+Salida: retorna la nueva raíz
+
+'''
+
+def rotateRight():
+  return
