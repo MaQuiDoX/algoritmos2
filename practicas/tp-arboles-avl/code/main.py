@@ -4,15 +4,19 @@ import random
 
 A = AVLTree()
 
+'''
+for _ in range(11):
+    insertAVL(A, 1, random.randint(0, 100))
+'''
 
-for _ in range(10):
-    insert(A, 1, random.randint(0, 100))
+insertAVL(A, 10, 10)
+insertAVL(A, 11, 11)
+insertAVL(A, 12, 12)
+insertAVL(A, 13, 13)
+insertAVL(A, 14, 14)
 
-calculateBalance(A)
 printBinaryTree(A.root)
 
-reBalance(A)
-
-print("")
+delete(A, 13)
 
 printBinaryTree(A.root)
