@@ -1,9 +1,18 @@
 from avltree import *
+from printtree import printBinaryTree
+import random
 
-arbol = AVLTree()
+A = AVLTree()
 
-insert(arbol, 2, 5)
 
-insert(arbol, 2, 7)
+for _ in range(10):
+    insert(A, 1, random.randint(0, 100))
 
-calculateBalance(arbol)
+calculateBalance(A)
+printBinaryTree(A.root)
+
+reBalance(A)
+
+print("")
+
+printBinaryTree(A.root)

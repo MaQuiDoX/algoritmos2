@@ -19,22 +19,22 @@ Salida: Devuelve la key asociada a la primera instancia del elemento. Devuelve N
 def search(B, element):
    node = searchR(B.root, element)
    if node == None:
-     return
+      return
    else:
-     return node.key
-  
+      return node.key
+
 def searchR(node, element):
    if node == None:
-     return
+      return
    if node.value == element:
-     return node
-    
+      return node
+
    right = searchR(node.rightnode, element)
    if right != None:
-     return right
+      return right
    left = searchR(node.leftnode, element)
    if left != None:
-     return left
+      return left
 
 '''
 insert(B,element,key)
@@ -47,11 +47,11 @@ def insert(AVLTree, element, key):
   newNode = AVLNode()
   newNode.value = element
   newNode.key = key
-  
+
   if AVLTree.root == None:
     AVLTree.root = newNode
   else:
-    AVLTree.root = insertR(newNode, AVLTree.root)
+    return insertR(newNode,AVLTree.root)
   return key
 
 def insertR(newNode, currentNode):
@@ -72,7 +72,7 @@ def insertR(newNode, currentNode):
   else:
     return None
 
-'''      
+'''
 delete(B,element)
 Descripción: Elimina un elemento del TAD árbol binario.
 Poscondición: Se debe desvincular el Node a eliminar.
@@ -120,7 +120,7 @@ def deleteR(B, node):
        node.value = newNode.value
        oldKey = node.key
        node.key = newNode.key
-    
+
        if newNode.parent.leftnode == newNode:
          newNode.parent.leftnode = None
        elif newNode.parent.rightnode == newNode:
@@ -144,24 +144,24 @@ Salida: Devuelve el valor de un elemento con una key del árbol
 def access(AVLTree, key):
    node = accessR(AVLTree.root, key)
    if (node == None):
-     return None
+      return None
    else:
-     return node.value
+      return node.value
 
 def accessR(node, key):
    if (node == None):
-     return None
+      return None
 
    if (node.key == key):
-     return node
+      return node
 
    rightN = accessR(node.rightnode, key)
    if (rightN != None):
-     return rightN
+      return rightN
 
    leftN = accessR(node.leftnode, key)
    if (leftN != None):
-     return leftN
+      return leftN
 
 '''
 update(L,element,key)
@@ -171,100 +171,134 @@ Salida: Devuelve None si no existe elemento para dicha clave. Caso contrario dev
 '''
 
 def update(AVLTree, key, newValue):
-  node = accessR(AVLTree.root, key)
-  if node == None:
-    return 
-  else:
-    node.value = newValue
-    return node.key
+   node = accessR(AVLTree.root, key)
+   if node == None:
+      return
+   else:
+      node.value = newValue
+      return node.key
 
 '''
-rotateLeft(Tree,avlnode) 
-Descripción: Implementa la operación rotación a la izquierda 
+rotateLeft(Tree,avlnode)
+Descripción: Implementa la operación rotación a la izquierda
 Entrada: Un Tree junto a un AVLnode sobre el cual se va a operar la rotación a la  izquierda
 Salida: retorna la nueva raíz
 '''
+def rotateLeft(AVLTree, AVLNode):
+    newNode = AVLNode.rightnode
+    AVLNode.rightnode = newNode.leftnode
+    newNode.leftnode = AVLNode
 
-def rotateLeft(Tree, avlnode):
-  parent = avlnode.parent
-  rightChild = avlnode.rightnode
-  rightLeftGrandchild = rightChild.leftnode
+    newNode.parent = AVLNode.parent
+    AVLNode.parent = newNode
+    if AVLNode.rightnode != None:
+      AVLNode.rightnode.parent = AVLNode
 
-  avlnode.rightnode = rightLeftGrandchild
-  if rightLeftGrandchild != None:
-    rightLeftGrandchild.parent = avlnode
+    AVLNode.bf = getBalanceFactor(AVLNode)
+    newNode.bf = getBalanceFactor(newNode)
 
-  rightChild.leftnode = avlnode
-  avlnode.parent = rightChild
-
-  if parent == None:
-    Tree.root = rightChild
-  elif parent.leftnode == avlnode:
-    parent.leftnode = rightChild
-  else:
-    parent.rightnode = rightChild
-
-  rightChild.parent = parent
-
-  avlnode = calculateBalance(avlnode.root)
-
-  return avlnode.root
-
+    return newNode
 '''
-rotateRight(Tree,avlnode) 
-Descripción: Implementa la operación rotación a la derecha 
+rotateRight(Tree,avlnode)
+Descripción: Implementa la operación rotación a la derecha
 Entrada: Un Tree junto a un AVLnode sobre el cual se va a operar la rotación a la  derecha
 Salida: retorna la nueva raíz
 
 '''
+def rotateRight(AVLTree, AVLNode):
+    newNode = AVLNode.leftnode
+    AVLNode.leftnode = newNode.rightnode
+    newNode.rightnode = AVLNode
 
-def rotateRight():
-  return
+    newNode.parent = AVLNode.parent
+    AVLNode.parent = newNode
+    if AVLNode.leftnode != None:
+      AVLNode.leftnode.parent = AVLNode
 
+    AVLNode.bf = getBalanceFactor(AVLNode)
+    newNode.bf = getBalanceFactor(newNode)
+
+    return newNode
 
 '''
-calculateBalance(AVLTree) 
-Descripción: Calcula el factor de balanceo de un árbol binario de búsqueda. 
+calculateBalance(AVLTree)
+Descripción: Calcula el factor de balanceo de un árbol binario de búsqueda.
 Entrada: El árbol AVL  sobre el cual se quiere operar.
 Salida: El árbol AVL con el valor de balanceFactor para cada subarbol
 '''
 
 def calculateBalance(AVLTree):
-   
    return calculateBalanceR(AVLTree, AVLTree.root)
 
 def calculateBalanceR(AVLTree, AVLNode):
-    if AVLNode is None:
-        return None
-    
-    left_height = treeHeight(AVLTree, AVLNode.leftnode)
-    right_height = treeHeight(AVLTree, AVLNode.rightnode)
-    
-    AVLNode.bf = left_height - right_height
+   if AVLNode == None:
+      return None
 
-    calculateBalanceR(AVLTree, AVLNode.leftnode)
-    calculateBalanceR(AVLTree, AVLNode.rightnode)
+   leftheight = treeHeight(AVLNode.leftnode)
+   rightheight = treeHeight(AVLNode.rightnode)
 
-    return AVLTree
+   AVLNode.bf = leftheight - rightheight
+
+   calculateBalanceR(AVLTree, AVLNode.leftnode)
+   calculateBalanceR(AVLTree, AVLNode.rightnode)
+
+   return AVLTree
 
 def treeHeight(currentNode):
-  if currentNode == None:
-    return 0
-  else:
-    Left = treeHeight(currentNode.leftnode)
-    Right = treeHeight(currentNode.rightnode)
+   if currentNode == None:
+      return 0
+   else:
+      Left = treeHeight(currentNode.leftnode)
+      Right = treeHeight(currentNode.rightnode)
 
-    if Left > Right: 
-      return Left + 1
-    else:
-      return Right + 1
+      if Left > Right:
+        return Left + 1
+      else:
+        return Right + 1
 
 '''
-reBalance(AVLTree) 
+reBalance(AVLTree)
 Descripción: balancea un árbol binario de búsqueda. Para esto se deberá primero calcular el balanceFactor del árbol y luego en función de esto aplicar la estrategia de rotación que corresponda.
 Entrada: El árbol binario de tipo AVL  sobre el cual se quiere operar.
 Salida: Un árbol binario de búsqueda balanceado. Es decir luego de esta operación se cumple que la altura (h) de su subárbol derecho e izquierdo difieren a lo sumo en una unidad.
 '''
 
 def reBalance(AVLTree):
-  return
+   if AVLTree.root != None:
+      AVLTree.root = reBalanceR(AVLTree, AVLTree.root)
+
+def reBalanceR(AVLTree, AVLNode):
+   if AVLNode.leftnode != None:
+      AVLNode.leftnode = reBalanceR(AVLTree, AVLNode.leftnode)
+   if AVLNode.rightnode != None:
+      AVLNode.rightnode = reBalanceR(AVLTree, AVLNode.rightnode)
+
+   AVLNode.bf = getBalanceFactor(AVLNode)
+
+   if AVLNode.bf > 1:
+      if AVLNode.leftnode.bf > 0:
+          AVLNode = rotateRight(AVLTree, AVLNode)
+      else:
+          AVLNode.leftnode = rotateLeft(AVLTree, AVLNode.leftnode)
+          AVLNode = rotateRight(AVLTree, AVLNode)
+
+   elif AVLNode.bf < -1:
+      if AVLNode.rightnode.bf < 0:
+        AVLNode = rotateLeft(AVLTree, AVLNode)
+      else:
+        AVLNode.rightnode = rotateRight(AVLTree, AVLNode.rightnode)
+        AVLNode = rotateLeft(AVLTree, AVLNode)
+
+   return AVLNode
+
+def getBalanceFactor(node):
+    left_height = 0
+    right_height = 0
+
+    if node.leftnode != None:
+      left_height = treeHeight(node.leftnode)
+
+    if node.rightnode != None:
+      right_height = treeHeight(node.rightnode)
+
+    return left_height - right_height
