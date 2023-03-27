@@ -18,6 +18,25 @@ def ContieneSuma(A, n):
     lenB = lenB - 1
   return False
 
+def checkMinorsBothSides(A, midValue, midPos, minorsFirstHalf, minorsSecondHalf):
+  currentNode1 = A.head
+  lenA = lengthList(A)
+  #Calculo cantidad de menores al valor del medio que hay en la primera mitad
+  for i in range(midPos):
+    if currentNode1.value < midValue:
+      minorsFirstHalf += 1
+    currentNode1 = currentNode1.nextNode
+  currentNode1 = A.head
+
+  #Calculo cantidad de menores al valor del medio que hay en la segunda mitad
+  for j in range(midPos+1, lenA):
+    if currentNode1.value >= midValue:
+      minorsSecondHalf += 1
+    currentNode1 = currentNode1.nextNode
+  currentNode1 = A.head
+
+  return minorsFirstHalf, minorsSecondHalf
+
 def orderHalfMinors(A):
   lenA = lengthList(A)
   midPosition = math.trunc(lenA/2)-1
@@ -26,43 +45,52 @@ def orderHalfMinors(A):
   minorsSecondHalf = 0
   position = 0
   currentNode1 = A.head
-  listMayorPositions = []
-  listMinorPositions = []
+  listMayorFirstHalf = []
+  listMinorFirstHalf = []
+  listMayorSecondHalf = []
+  listMinorSecondHalf = []
 
-  #Calculo cantidad de menores al valor del medio que hay en la primera mitad
-  for i in range(midPosition):
-    if currentNode1.value < midValue:
-      minorsFirstHalf += 1
-    currentNode1 = currentNode1.nextNode
-  currentNode1 = A.head
+  minorsFirstHalf, minorsSecondHalf = checkMinorsBothSides(A, midValue, midPosition, minorsFirstHalf, minorsSecondHalf)
 
-  #Calculo cantidad de menores al valor del medio que hay en la segunda mitad
-  for j in range(midPosition, lenA):
+  #Asigno a 1 lista las posiciones de los valores mayores al valor del medio de la primera mitad y a la otra lista y los valores menores
+  for k in range(midPosition):
     if currentNode1.value < midValue:
-      minorsSecondHalf += 1
-    currentNode1 = currentNode1.nextNode
-  currentNode1 = A.head
-
-  for k in range(lenA):
-    if currentNode1.value < midValue:
-      listMinorPositions.append(position)
+      listMinorFirstHalf.append(position)
       position += 1
     elif currentNode1.value >= midValue:
-      listMayorPositions.append(position)
+      listMayorFirstHalf.append(position)
       position += 1
+    currentNode1 = currentNode1.nextNode
+  currentNode1 = A.head  
 
-    
-  '''
-  Solucionar (Puede que hasta la mitad haya mas menores al valor del medio que en toda la lista, condicional, 2 casos)
+  #Asigno a 1 lista las posiciones de los valores mayores al valor del medio de la segunda mitad y a la otra lista y los valores menores
+  for k in range(midPosition+1, lenA):
+    if currentNode1.value < midValue:
+      listMinorSecondHalf.append(position)
+      position += 1
+    elif currentNode1.value >= midValue:
+      listMayorSecondHalf.append(position)
+      position += 1
+    currentNode1 = currentNode1.nextNode
+  currentNode1 = A.head
 
-  En vez de calcular la mitad truncada de la mitad de la lista, mejor me conviene calcular los menores que se encuentran en la izquierda y en la derecha,
-  y al momento de swapear los nodos dependiendo de cada caso, realizar la operacion correspondiente (sumar de un lado, rstar del otro) hasta que queden parejos y terminar el while...
+  while (abs(minorsFirstHalf - minorsSecondHalf) != [1,0]):
+    if minorsFirstHalf < minorsSecondHalf:
+      swapNodes(A, listMinorFirstHalf[0], listMayorSecondHalf[0])
+      minorsFirstHalf, minorsSecondHalf = checkMinorsBothSides(A, midValue, midPosition, minorsFirstHalf, minorsSecondHalf)
+    elif minorsFirstHalf > minorsSecondHalf:
+      swapNodes(A, listMinorFirstHalf[0], listMayorSecondHalf[0])
+      minorsFirstHalf, minorsSecondHalf = checkMinorsBothSides(A, midValue, midPosition, minorsFirstHalf, minorsSecondHalf)
+    else:
+      return A
+  return A
 
-  Hacer 2 arrays que guaden la posicion de los nodos mayores y menores, al momento de acceder a los nodos con las respectivas posiciones, eliminar las posiciones ya utilizadas.
-  '''
-
+'''
+Solucionar (Puede que hasta la mitad haya mas menores al valor del medio que en toda la lista, condicional, 2 casos)
+'''
 
 A = LinkedList()
+
 addList(A,1)
 addList(A,1)
 addList(A,2)
@@ -73,7 +101,5 @@ addList(A,1)
 addList(A,6)
 
 printlinkedlist(A)
-
-orderHalfMinors(A)
-
+A = orderHalfMinors(A)
 printlinkedlist(A)
