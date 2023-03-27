@@ -22,38 +22,45 @@ def orderHalfMinors(A):
   lenA = lengthList(A)
   midPosition = math.trunc(lenA/2)-1
   midValue = accessList(A, midPosition)
-  minorsHalf = 0
-  minorsList = 0
+  minorsFirstHalf = 0
+  minorsSecondHalf = 0
+  position = 0
   currentNode1 = A.head
+  listMayorPositions = []
+  listMinorPositions = []
 
-  #Calculo cantidad de menores al valor del medio que hay en la mitad
+  #Calculo cantidad de menores al valor del medio que hay en la primera mitad
   for i in range(midPosition):
     if currentNode1.value < midValue:
-      minorsHalf += 1
+      minorsFirstHalf += 1
     currentNode1 = currentNode1.nextNode
   currentNode1 = A.head
 
-  #Calculo cantidad de menores al valor del medio en toda la lista
-  for j in range(lenA):
+  #Calculo cantidad de menores al valor del medio que hay en la segunda mitad
+  for j in range(midPosition, lenA):
     if currentNode1.value < midValue:
-      minorsList += 1
+      minorsSecondHalf += 1
     currentNode1 = currentNode1.nextNode
   currentNode1 = A.head
 
+  for k in range(lenA):
+    if currentNode1.value < midValue:
+      listMinorPositions.append(position)
+      position += 1
+    elif currentNode1.value >= midValue:
+      listMayorPositions.append(position)
+      position += 1
+
+    
   '''
   Solucionar (Puede que hasta la mitad haya mas menores al valor del medio que en toda la lista, condicional, 2 casos)
+
+  En vez de calcular la mitad truncada de la mitad de la lista, mejor me conviene calcular los menores que se encuentran en la izquierda y en la derecha,
+  y al momento de swapear los nodos dependiendo de cada caso, realizar la operacion correspondiente (sumar de un lado, rstar del otro) hasta que queden parejos y terminar el while...
+
+  Hacer 2 arrays que guaden la posicion de los nodos mayores y menores, al momento de acceder a los nodos con las respectivas posiciones, eliminar las posiciones ya utilizadas.
   '''
-  while math.trunc(minorsList/2) != minorsHalf:
-        for k in range(midPosition, lenA):
-          if currentNode1.value < midValue:
-            '''
-            move(A, currentNode1, 0)
-            Duda sobre que sucede si el medio se mueve de lugar
-            '''
-            minorsHalf += 1
-            break
-          currentNode1 = currentNode1.nextNode
-  return A
+
 
 A = LinkedList()
 addList(A,1)
