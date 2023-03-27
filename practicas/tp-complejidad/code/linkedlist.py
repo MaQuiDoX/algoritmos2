@@ -111,3 +111,38 @@ def printlinkedlist(L):
     print (current.value, end=" ")
     current = current.nextNode
   print("]\n")
+
+    
+def swapNodes(A, pos1, pos2):
+  if pos1 == pos2:
+    return
+
+  PrevNodo1 = None
+  nodo1 = A.head
+  for i in range(pos1):
+    if nodo1 is None:
+      return
+    PrevNodo1 = nodo1
+    nodo1 = nodo1.nextNode
+
+  PrevNode2 = None
+  nodo2 = A.head
+  for i in range(pos2):
+    if nodo2 is None:
+      return
+    PrevNode2 = nodo2
+    nodo2 = nodo2.nextNode
+
+  if PrevNodo1 != None:
+    PrevNodo1.nextNode = nodo2
+  else:
+    A.head = nodo2
+
+  if PrevNode2 != None:
+    PrevNode2.nextNode = nodo1
+  else:
+    A.head = nodo1
+
+  temp = nodo1.nextNode
+  nodo1.nextNode = nodo2.nextNode
+  nodo2.nextNode = temp
