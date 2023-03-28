@@ -1,5 +1,6 @@
 from linkedlist import *
 import math
+import random
 
 def ContieneSuma(A, n):
   lenA = lengthList(A)
@@ -26,32 +27,22 @@ def checkMinorsBothSides(A, midValue, midPos, minorsFirstHalf, minorsSecondHalf)
     if currentNode1.value < midValue:
       minorsFirstHalf += 1
     currentNode1 = currentNode1.nextNode
-  currentNode1 = A.head
+  currentNode1 = currentNode1.nextNode
 
   #Calculo cantidad de menores al valor del medio que hay en la segunda mitad
   for j in range(midPos+1, lenA):
-    if currentNode1.value >= midValue:
+    if currentNode1.value < midValue:
       minorsSecondHalf += 1
     currentNode1 = currentNode1.nextNode
   currentNode1 = A.head
 
   return minorsFirstHalf, minorsSecondHalf
 
-def orderHalfMinors(A):
-  lenA = lengthList(A)
-  midPosition = math.trunc(lenA/2)-1
-  midValue = accessList(A, midPosition)
-  minorsFirstHalf = 0
-  minorsSecondHalf = 0
-  position = 0
+def updatePositionLists(A, midPosition, midValue, listMinorFirstHalf, listMinorSecondHalf, listMayorFirstHalf, listMayorSecondHalf):
   currentNode1 = A.head
-  listMayorFirstHalf = []
-  listMinorFirstHalf = []
-  listMayorSecondHalf = []
-  listMinorSecondHalf = []
-
-  minorsFirstHalf, minorsSecondHalf = checkMinorsBothSides(A, midValue, midPosition, minorsFirstHalf, minorsSecondHalf)
-
+  position = 0
+  lenA = lengthList(A)
+  
   #Asigno a 1 lista las posiciones de los valores mayores al valor del medio de la primera mitad y a la otra lista y los valores menores
   for k in range(midPosition):
     if currentNode1.value < midValue:
@@ -61,7 +52,9 @@ def orderHalfMinors(A):
       listMayorFirstHalf.append(position)
       position += 1
     currentNode1 = currentNode1.nextNode
-  currentNode1 = A.head  
+    
+  currentNode1 = currentNode1.nextNode
+  position += 1
 
   #Asigno a 1 lista las posiciones de los valores mayores al valor del medio de la segunda mitad y a la otra lista y los valores menores
   for k in range(midPosition+1, lenA):
@@ -74,31 +67,53 @@ def orderHalfMinors(A):
     currentNode1 = currentNode1.nextNode
   currentNode1 = A.head
 
-  while (abs(minorsFirstHalf - minorsSecondHalf) != [1,0]):
-    if minorsFirstHalf < minorsSecondHalf:
+  return listMinorFirstHalf, listMinorSecondHalf, listMayorFirstHalf, listMayorSecondHalf
+  
+def orderHalfMinors(A):
+  lenA = lengthList(A)-1
+  midPosition = math.trunc(lenA/2)
+  midValue = accessList(A, midPosition)
+  minorsFirstHalf = 0
+  minorsSecondHalf = 0
+  listMayorFirstHalf = []
+  listMinorFirstHalf = []
+  listMayorSecondHalf = []
+  listMinorSecondHalf = []
+
+  minorsFirstHalf, minorsSecondHalf = checkMinorsBothSides(A, midValue, midPosition, minorsFirstHalf, minorsSecondHalf)
+  listMinorFirstHalf, listMinorSecondHalf, listMayorFirstHalf, listMayorSecondHalf = updatePositionLists(A, midPosition, midValue, listMinorFirstHalf, listMinorSecondHalf, listMayorFirstHalf, listMayorSecondHalf)
+
+  differenceMinors = minorsFirstHalf - minorsSecondHalf
+  print("Pivote: ", midValue, ". Posición: ", midPosition)
+  
+  #A partir de la diferencia entre los menores que se encuentren a la izquierda y a la derecha del pivote,
+  #a partir del lado que tienga mas menores realizo intercambios de estos con los mayores que se encuentren del otro lado
+  while differenceMinors != 0 and differenceMinors != 1 and differenceMinors != -1:
+    if minorsFirstHalf > minorsSecondHalf:
       swapNodes(A, listMinorFirstHalf[0], listMayorSecondHalf[0])
+      listMinorSecondHalf.insert(0, listMinorFirstHalf.pop(0))
+      listMayorFirstHalf.insert(0, listMayorSecondHalf.pop(0))
+      minorsFirstHalf = 0
+      minorsSecondHalf = 0
       minorsFirstHalf, minorsSecondHalf = checkMinorsBothSides(A, midValue, midPosition, minorsFirstHalf, minorsSecondHalf)
-    elif minorsFirstHalf > minorsSecondHalf:
-      swapNodes(A, listMinorFirstHalf[0], listMayorSecondHalf[0])
+      differenceMinors = minorsFirstHalf - minorsSecondHalf
+    elif minorsFirstHalf < minorsSecondHalf:
+      swapNodes(A, listMayorFirstHalf[0], listMinorSecondHalf[0])
+      listMinorFirstHalf.insert(0, listMinorSecondHalf.pop(0))
+      listMayorSecondHalf.insert(0, listMayorFirstHalf.pop(0))
+      minorsFirstHalf = 0
+      minorsSecondHalf = 0
       minorsFirstHalf, minorsSecondHalf = checkMinorsBothSides(A, midValue, midPosition, minorsFirstHalf, minorsSecondHalf)
+      differenceMinors = minorsFirstHalf - minorsSecondHalf
     else:
       return A
-  return A
-
-'''
-Solucionar (Puede que hasta la mitad haya mas menores al valor del medio que en toda la lista, condicional, 2 casos)
-'''
+  else: 
+    return A
 
 A = LinkedList()
 
-addList(A,1)
-addList(A,1)
-addList(A,2)
-addList(A,8)
-addList(A,4)
-addList(A,7)
-addList(A,1)
-addList(A,6)
+for i in range(20):
+  addList(A, random.randint(1, 20))
 
 printlinkedlist(A)
 A = orderHalfMinors(A)
