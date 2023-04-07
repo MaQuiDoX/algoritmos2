@@ -37,19 +37,19 @@ def insertR(lastNode, S, element):
         trieNode = TrieNode()
         trieNode.key = element[0]
         trieNode.parent = lastNode
-    
+
         if len(element) == 1:
-            trieNode.children = None
-        else:
             trieNode.children = []
+        else:
+            trieNode.children = None
         S.append(trieNode)
 
     if len(element) != 1:
         #Si todavía hay elementos en la palabra, se llama recursivamente a la función insertR con los elementos restantes y la lista de hijos del nodo actual
         element = element[1:]
         if trieNode.children is None:
-            # Si el nodo actual es una hoja, se crea una nueva lista vacía para sus hijos
-            trieNode = []
+            # Si el nodo actual es una hoja, se crea un nuevo nodo vacío para sus hijos
+            trieNode.children = []
         insertR(trieNode, trieNode.children, element)
     else:
         #Si se insertaron todos los elementos de la palabra se marca al nodo como el final de la palabra
@@ -72,7 +72,7 @@ def searchR(S, element):
     
     #Iteramos sobre los elementos de la lista S
     for i in range(len(S)):
-        #Si encontramos un elemento cuya key es igual a la primera letra del elemento buscado, almacenamos su índice en la variable 'condition' y salimos del bucle con 'break'
+        #Si encontramos un elemento cuya key es igual a la primera letra del elemento buscado, almacenamos su índice en la variable 'index' y salimos del bucle con 'break'
         if S[i].key == element[0]:
             index = i
             break
@@ -102,6 +102,13 @@ Implementar un algoritmo que dado un árbol Trie T, un patrón p y un entero n, 
 empiezan por p y sean de longitud n. 
 '''
 
+def searchWords(T, patron, long):
+    mainlist = getWords(T)
+    for i in range(len(mainlist)):
+        if len(mainlist[i]) == long and mainlist[i][0] == patron:
+            print(mainlist[i])
+    return
+
 '''
 Implementar un algoritmo que dado los Trie T1 y T2 devuelva True si estos pertenecen al mismo documento y False en caso contrario.
 Se considera que un  Trie pertenecen al mismo documento cuando:
@@ -113,7 +120,35 @@ En otras palabras, analizar si todas las palabras de T1 se encuentran en T2.
 
 Analizar el costo computacional.
 '''
+def getWords(T):
+    words = []
+    if T.root is not None:
+        stack = [(node, '') for node in T.root]
+        while stack:
+            node, prefix = stack.pop()
+            word = prefix + node.key
+            if node.isEndOfWord:
+                words.append(word)
+            if node.children is not None:
+                for child in reversed(node.children):
+                    stack.append((child, word))
+    return words
 
+def sameWords(Trie1, Trie2):
+    listTrie1 = sorted(getWords(Trie1))
+    listTrie2 = sorted(getWords(Trie2))
+    count = 0
+    
+    if len(listTrie1) != len(listTrie2):
+        return False
+
+    for i in range(len(listTrie1)):
+        if listTrie1[i] == listTrie2[i]:
+            count += 1
+            if len(listTrie1) == count:
+                return True
+    
+    return False
 '''
 Ejercicio 6
 Implemente un algoritmo que dado el Trie T devuelva True si existen en el documento T dos cadenas invertidas. 
@@ -122,7 +157,18 @@ ej: abcd y dcba son cadenas invertidas, gfdsa y asdfg son cadenas invertidas, si
 en un carácter.
 '''
 
+def twiceStringInverted(T):
+    wordslist = getWords(T)
+
+    for i in range(len(wordslist)):
+        reversedword = "".join(reversed(wordslist[i]))
+        for j in range(i, len(wordslist)):
+            if reversedword == wordslist[j]:
+                return True
+    
+    return False
 '''
+Ejercicio 7
 Un corrector ortográfico interactivo utiliza un Trie para representar las palabras de su diccionario. 
 Queremos añadir una función de auto-completar (al estilo de la tecla TAB en Linux): cuando estamos a medio escribir una palabra, 
 si sólo existe una forma correcta de continuarla entonces debemos indicarlo. 
