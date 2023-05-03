@@ -135,7 +135,37 @@ Salida: LinkedList de las aristas que se pueden eliminar y el grafo resultante s
 
 def convertTree(Grafo):
     if isTree(Grafo)==True:
-        return linkedlist.LinkedList()
+        return []
+    edges = []
+    
+    Grafo, edges = convertToBFSTreeEdges(Grafo, 0)
+    
+    return Grafo, edges
+    
+def convertToBFSTreeEdges(Grafo, v):
+    n = len(Grafo)
+    BFS_tree = [[] for _ in range(n)]
+    color = ['blanco' for _ in range(n)]
+    parent = [-1 for _ in range(n)]
+    edges = []
+    
+    color[v] = 'gris'
+    cola = [v]
+    
+    while cola:
+        u = cola.pop(0)
+        for w in Grafo[u]:
+            if color[w] == 'blanco':
+                color[w] = 'gris'
+                BFS_tree[u].append(w)
+                BFS_tree[w].append(u)
+                parent[w] = u
+                cola.append(w)
+            elif color[w] == "gris" and parent[u] != w:
+                edges.append((u,w))
+        color[u] = 'negro'
+    
+    return BFS_tree, edges
     
 
 # ------------------------------ PARTE 2 ------------------------------
@@ -154,16 +184,16 @@ def countConnections(Grafo):
     visitado = [False] * n
     componentes = 0
     
-    def counter(u):
+    def visit(u):
         visitado[u] = True
         for v in Grafo[u]:
             if not visitado[v]:
-                counter(v)
+                visit(v)
     
     for u in range(n):
         if not visitado[u]:
             componentes += 1
-            counter(u)
+            visit(u)
     
     return componentes
 
@@ -177,6 +207,8 @@ Salida: Devuelve una Lista de Adyacencia con la representación BFS del grafo re
 '''
 
 def convertToBFSTree(Grafo, v):
+    if not isConnected(Grafo):
+        return []
     n = len(Grafo)
     BFS_tree = [[] for _ in range(n)]
     color = ['blanco' for _ in range(n)]
@@ -205,45 +237,31 @@ Entrada: Grafo con la representación de Lista de Adyacencia, v vértice que rep
 Salida: Devuelve una Lista de Adyacencia con la representación DFS del grafo recibido usando v como raíz.
 '''
 
-'''
 def convertToDFSTree(Grafo, v):
-    n = len(Grafo)
-    DFS_tree = [[] for _ in range(n)]
-    color = ['blanco' for _ in range(n)]
-    padre = [-1] * n
+    if not isConnected(Grafo):
+        return []
+    visitados = [False] * len(Grafo)
+    arbol = [[] for _ in range(len(Grafo))]
+    padres = [None for _ in range(len(Grafo))]
+    
+    convertToDFSTreeR(Grafo, v, visitados, arbol, padres)
+    
+    return arbol
 
-    def dfs(u):
-        color[u] = 'gris'
-        for adyacente in Grafo[u]:
-            if color[adyacente] == 'blanco':
-                padre[adyacente] = u
-                DFS_tree[u].append(adyacente)
-                dfs(adyacente)
-            elif color[adyacente] == 'gris' and padre[u] != adyacente:
-                DFS_tree[u].append(adyacente)
-            elif color[adyacente] == 'negro':
-                if padre[u] != adyacente:
-                    DFS_tree[u].append(adyacente)
-
-        color[u] = 'negro'
-
-    dfs(v)
-    if padre[v] == -1:
-        DFS_tree[v] = []
-
-    nodos_sin_padres = [i for i in range(n) if padre[i] == -1 and i != v]
-    for nodo in nodos_sin_padres:
-        DFS_tree[nodo] = []
-
-    for i in range(n):
-        for j in DFS_tree[i]:
-            if j not in range(n):
-                DFS_tree[i].remove(j)
-
-    return DFS_tree
-'''
-
-
+def convertToDFSTreeR(Grafo, u, visitados, arbol, padres):
+    visitados[u] = True
+    for v in Grafo[u]:
+        if not visitados[v]:
+            arbol[u].append(v)
+            arbol[v].append(u)
+            padres[v] = u
+            convertToDFSTreeR(Grafo, v, visitados, arbol, padres)
+        elif v != padres[u] and v in padres:
+            continue
+        elif v != padres[u]:
+            arbol[u].append(v)
+            arbol[v].append(u)
+    return
 '''
 EJERCICIO 10
 
@@ -253,3 +271,30 @@ Entrada: Grafo con la representación de Lista de Adyacencia, v1 y v2 vértices 
 Salida: retorna la lista de vértices que representan el camino más corto entre v1 y v2. La lista resultante 
 contiene al inicio a v1 y al final a v2. En caso que no exista camino se retorna la lista vacía.
 '''
+
+def bestRoad(Grafo, v1, v2):
+    n = len(Grafo)
+    visitado = [False for _ in range(n)]
+    previo = [-1 for _ in range(n)]
+    distancia = [float('inf') for _ in range(n)]
+    
+    distancia[v1] = 0
+    visitado[v1] = True
+    cola = []
+    cola.append(v1)
+    
+    while cola:
+        u = cola.pop()
+        for v in Grafo[u]:
+            if not visitado[v]:
+                visitado[v] = True
+                previo[v] = u
+                cola.append(v)
+                if v == v2:
+                    camino = [v2]
+                    while previo[v2] != -1:
+                        camino.append(previo[v2])
+                        v2 = previo[v2]
+                    camino.reverse()
+                    return camino
+    return []
