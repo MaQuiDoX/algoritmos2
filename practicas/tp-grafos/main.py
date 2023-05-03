@@ -5,8 +5,13 @@ from graph import *
 Vertices = linkedlist.LinkedList()
 Aristas = linkedlist.LinkedList()
 
-Vert = [0,1,2,3]
-Arist = [(0,1), (1,2),(2,3)]
+'''
+Vert = [0,1,2,3,4,5,6]
+Arist = [(0,1), (1,2),(2,3),(2,5),(3,1),(4,2),(4,5),(5,6)]
+'''
+Vert = [0,1,2,3,4,5,6,7]
+Arist = [(0,1), (1,2),(2,3),(4,5),(5,6)]
+
 
 for i in Vert:
     linkedlist.addList(Vertices, i)
@@ -18,5 +23,23 @@ Grafo = createGraph(Vertices,Aristas)
 for i in range(len(Vert)):
     print(Grafo[i])
     
+    
+print(countConnections(Grafo))
+'''
 print("")
-linkedlist.printlinkedlist(convertTree(Grafo))
+print("GRAFO BFS")
+print("")
+GrafoBFS = convertToBFSTree(Grafo, 0)
+
+for i in range(len(Grafo)):
+    print(GrafoBFS[i])
+
+
+print("")
+print("GRAFO DFS")
+print("")
+GrafoDFS = convertToDFSTree(Grafo, 0)
+
+for i in range(len(Grafo)):
+    print(GrafoDFS[i])
+'''

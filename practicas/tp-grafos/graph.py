@@ -149,6 +149,24 @@ Entrada: Grafo con la representación de Lista de Adyacencia.
 Salida: retorna el número de componentes conexas que componen el grafo.
 '''
 
+def countConnections(Grafo):
+    n = len(Grafo)-1
+    visitado = [False] * n
+    componentes = 0
+    
+    def counter(u):
+        visitado[u] = True
+        for v in Grafo[u]:
+            if not visitado[v]:
+                counter(v)
+    
+    for u in range(n):
+        if not visitado[u]:
+            componentes += 1
+            counter(u)
+    
+    return componentes
+
 '''
 EJERCICIO 8
 
@@ -158,6 +176,26 @@ Entrada: Grafo con la representación de Lista de Adyacencia, v vértice que rep
 Salida: Devuelve una Lista de Adyacencia con la representación BFS del grafo recibido usando v como raíz.
 '''
 
+def convertToBFSTree(Grafo, v):
+    n = len(Grafo)
+    BFS_tree = [[] for _ in range(n)]
+    color = ['blanco' for _ in range(n)]
+    
+    color[v] = 'gris'
+    cola = [v]
+    
+    while cola:
+        u = cola.pop(0)
+        for w in Grafo[u]:
+            if color[w] == 'blanco':
+                color[w] = 'gris'
+                BFS_tree[u].append(w)
+                BFS_tree[w].append(u)
+                cola.append(w)
+        color[u] = 'negro'
+    
+    return BFS_tree
+
 '''
 EJERCICIO 9
 
@@ -166,6 +204,45 @@ Descripción: Convierte un grafo en un árbol DFS
 Entrada: Grafo con la representación de Lista de Adyacencia, v vértice que representa la raíz del árbol
 Salida: Devuelve una Lista de Adyacencia con la representación DFS del grafo recibido usando v como raíz.
 '''
+
+'''
+def convertToDFSTree(Grafo, v):
+    n = len(Grafo)
+    DFS_tree = [[] for _ in range(n)]
+    color = ['blanco' for _ in range(n)]
+    padre = [-1] * n
+
+    def dfs(u):
+        color[u] = 'gris'
+        for adyacente in Grafo[u]:
+            if color[adyacente] == 'blanco':
+                padre[adyacente] = u
+                DFS_tree[u].append(adyacente)
+                dfs(adyacente)
+            elif color[adyacente] == 'gris' and padre[u] != adyacente:
+                DFS_tree[u].append(adyacente)
+            elif color[adyacente] == 'negro':
+                if padre[u] != adyacente:
+                    DFS_tree[u].append(adyacente)
+
+        color[u] = 'negro'
+
+    dfs(v)
+    if padre[v] == -1:
+        DFS_tree[v] = []
+
+    nodos_sin_padres = [i for i in range(n) if padre[i] == -1 and i != v]
+    for nodo in nodos_sin_padres:
+        DFS_tree[nodo] = []
+
+    for i in range(n):
+        for j in DFS_tree[i]:
+            if j not in range(n):
+                DFS_tree[i].remove(j)
+
+    return DFS_tree
+'''
+
 
 '''
 EJERCICIO 10
